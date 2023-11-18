@@ -11,15 +11,44 @@ pygame.init()
 gravity = (math.pi, -0.02)
 elasticity = 0.75
 mass_of_air = 0.0
-dampening  = .75
+dampening  = .80
 
-def addVectors(angle1, length1, angle2, length2):
-    x = math.sin(angle1)*length1 + math.sin(angle2)*length2
-    y = math.cos(angle1)*length1 + math.cos(angle2)*length2
+#creating an environment for our particles to live in
+class Environment:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.particles = []
+        self.color = (0,0,0)
 
-    length = math.hypot(x,y)
-    angle =  0.5 * math.pi - math.atan2(y,x)
-    return angle, length
+        gravity = (math.pi, -0.02)
+        elasticity = 0.75
+        mass_of_air = 0.0
+        dampening  = .80
+
+    def addParticles(self,numParticles, **kwargs):
+        for i in range(numParticles):
+            size = kwargs.get('size', random.randint(10,20))
+            radius = size
+            mass = kwargs.get('mass',random.randint(100,10000))
+            x = kwargs.get('x',random.uniform(size, width - radius))
+            y = kwargs.get('y',random.uniform(size, height - radius))
+
+            particle = Particle(x, y, size, radius, mass)
+
+            particle.speed = kwargs.get('speed', random.random())
+            particle.angle = kwargs.get('angle', random.random())
+            particle.color = (0,0,255)
+            particle.drag  = (particle.mass/(particle.mass + self.mass_of_air)) ** particle.size
+
+            self.particles.append(particle)
+    
+    def update(self):
+        pass
+
+    def display(self, particle):
+        pass
+
 
 class Particle:
     def __init__(self, x, y, size, radius, mass=1):
@@ -39,7 +68,7 @@ class Particle:
         self.y += self.speed*math.cos(self.angle)
         self.x += self.speed*math.sin(self.angle)
 
-        self.angle, self.speed = addVectors(self.angle, self.speed, gravity[0], gravity[1])
+        #self.angle, self.speed = addVectors(self.angle, self.speed, gravity[0], gravity[1])
         self.speed *= self.drag
 
 
@@ -103,6 +132,13 @@ class Particle:
     def display(self):
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size)
 
+def addVectors(angle1, length1, angle2, length2):
+    x = math.sin(angle1)*length1 + math.sin(angle2)*length2
+    y = math.cos(angle1)*length1 + math.cos(angle2)*length2
+
+    length = math.hypot(x,y)
+    angle =  0.5 * math.pi - math.atan2(y,x)
+    return angle, length
 
 def make_particle():
     size = random.randint(10,20)
@@ -113,7 +149,7 @@ def make_particle():
 
     particle = Particle(x, y, size, radius, density * size ** 2)
 
-    particle.speed = random.random()
+    particle.speed = 0
 
     return particle
 
@@ -161,7 +197,7 @@ while running:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 dx = mouseX - selected_particle.x
                 dy = mouseY - selected_particle.y
-                selected_particle.speed = math.hypot(dx, dy) * 0.05  # Adjust the multiplier for the throwing speed
+                selected_particle.speed = math.hypot(dx, dy) * 0.10  # Adjust the multiplier for the throwing speed
                 selected_particle.angle = math.atan2(dy, dx)
                 selected_particle = None
 
