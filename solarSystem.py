@@ -1,21 +1,12 @@
-"""
-I want to make a solar system simulator.
-
-It has to show the positions of the planets as they move around the Sun.
-
-Will have to include:
-
-Gravitation
-
-Angular Momentum
-
-Polar Coordinates
-"""
-
 import math
 import numpy as np
 import scipy
 import pandas as pd
+import pygame
+
+pygame.init()
+
+(width, heigh) = (500,500)
 
 #Define the mass of the Sun, as well as the gravitational constant
 mass_Sol = 1.98 * 10**30  #Mass of the Sun in kilograms
